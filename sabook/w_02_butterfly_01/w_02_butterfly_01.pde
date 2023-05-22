@@ -29,9 +29,9 @@ void draw() {
     for (int i=0; i<N; i++) {
       x_new = R * x * (1 - x);
       x = x_new;
-      sum += log2(abs(R*(1-2*x))); // вычисление экспоненты Ляпунова
+      sum += log2(abs(R*(1-2*x))); // вычисление экспоненты Ляпунова, это сумма в уравнении 1E
     }
-    float L = sum/N;
+    float L = sum/N; // экспонента Ляпунова, уравнение 1E
     float x_point = map(R, Rmin, Rmax, 0, width);
     float y_point = map(x, 0, 1, height, 0);
     float L_point = map(L, -1, 1, height, 0);
