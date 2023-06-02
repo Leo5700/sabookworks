@@ -3,6 +3,8 @@
 
  понадобиться установить библиотеку sound
  https://processing.org/reference/libraries/sound/index.html 
+
+ двумерный хаос из одномерного также можно извлечь, решив уравнение дважды.
  
  */
 
@@ -38,8 +40,8 @@ float se, L;
 float sh = 0;
 
 int n = 50000; //
-float[] xs = new float[n];
-float[] xsprev = new float[n];
+
+//float[] xsprev = new float[n];
 
 float px, py, pz;
 
@@ -55,11 +57,31 @@ void draw() {
 
   translate(width*.5, height*.5);
 
+  float[] xs = getX(0);
+  float[] ys = getX(1000);
 
-  for (int j=0; j<10; j++) {
+  float minxs = min(xs);
+  float maxxs = max(xs);
+  float minys = min(ys);
+  float maxys = max(ys);
+
+  for (int i=0; i<xs.length; i++) {
+    px = map(xs[i], minxs, maxxs, -base*.5, base*.5);
+    py = map(ys[i], minys, maxys, base*.5, -base*.5);
+    point(px, py);
+  }
+}
+
+
+float[] getX(float sh_sh) {
+
+  float[] xs = new float[n];
+
+  for (int j=0; j<10; j++) { // 10 попыток поиска неустойчивого решения
+  
     sh += 0.001 + fv.volnormfiltered * 0.003; //
-    r = map(noise(sh), 0, 1, rmin, rmax);
-    x0 = map(noise(sh+100), 0, 1, x0min, x0max);
+    r = map(noise(sh+sh_sh), 0, 1, rmin, rmax);
+    x0 = map(noise(sh+sh_sh+100), 0, 1, x0min, x0max);
 
     x = x0;
     se = 1; //!
@@ -73,23 +95,15 @@ void draw() {
 
     L = se/n; // экспонента Ляпунова
 
-    int count = int(map(fv.volnormfiltered, 0, 1, n*0.92, n)); //
+    //int count = int(map(fv.volnormfiltered, 0, 1, n*0.92, n)); //
 
     if (L > -.5) { //
-      float minxs = min(xs);
-      float maxxs = max(xs);
-      float minxsprev = min(xsprev);
-      float maxxsprev = max(xsprev);
 
-      for (int i=0; i<count; i++) {
-        px = map(xs[i], minxs, maxxs, -base*.5, base*.5);
-        py = map(xsprev[i], minxsprev, maxxsprev, base*.5, -base*.5);
-        point(px, py);
-      }
-      arrayCopy(xs, xsprev);
+      //arrayCopy(xs, xsprev);
       break;
     }
   }
+  return xs;
 }
 
 
